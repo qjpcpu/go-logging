@@ -9,7 +9,7 @@ const (
     default_id = "default-logger"
 )
 
-func InitDefault(level Level) *Logger {
+func InitLogger(level Level) *Logger {
     default_logger := MustGetLogger(default_id)
     format := MustStringFormatter("%{level} %{message}")
     SetFormatter(format)
@@ -19,11 +19,17 @@ func InitDefault(level Level) *Logger {
 
     syslogBackend, err := NewSyslogBackend("")
     if err != nil {
-        Default.Fatal(err)
+        default_logger.Fatal(err)
     }
-
     // Combine them both into one logging backend.
     SetBackend(logBackend, syslogBackend)
+    SetLevel(level, default_id)
+    return default_logger
+}
+func InitSimpleLogger(level Level) *Logger {
+    default_logger := MustGetLogger(default_id)
+    format := MustStringFormatter("%{level} %{message}")
+    SetFormatter(format)
     SetLevel(level, default_id)
     return default_logger
 }

@@ -188,10 +188,10 @@ func (l *Logger) Criticalf(format string, args ...interface{}) {
 
 // Error logs a message using INFO as log level.
 func (l *Logger) Error(args ...interface{}) {
-    l.log(INFO, "%s", strings.TrimRight(fmt.Sprintln(args...), "\n"))
+    l.log(ERROR, "%s", strings.TrimRight(fmt.Sprintln(args...), "\n"))
 }
 func (l *Logger) Errorf(format string, args ...interface{}) {
-    l.log(INFO, "%s", fmt.Sprintf(format, args...))
+    l.log(ERROR, "%s", fmt.Sprintf(format, args...))
 }
 
 // Warning logs a message using WARNING as log level.
@@ -204,10 +204,10 @@ func (l *Logger) Warningf(format string, args ...interface{}) {
 
 // Notice logs a message using INFO as log level.
 func (l *Logger) Notice(args ...interface{}) {
-    l.log(INFO, "%s", strings.TrimRight(fmt.Sprintln(args...), "\n"))
+    l.log(NOTICE, "%s", strings.TrimRight(fmt.Sprintln(args...), "\n"))
 }
 func (l *Logger) Noticef(format string, args ...interface{}) {
-    l.log(INFO, "%s", fmt.Sprintf(format, args...))
+    l.log(NOTICE, "%s", fmt.Sprintf(format, args...))
 }
 
 // Info logs a message using INFO as log level.
