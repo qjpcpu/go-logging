@@ -1,96 +1,48 @@
 ## Golang logging library
 
-[![Build Status](https://travis-ci.org/op/go-logging.png)](https://travis-ci.org/op/go-logging)
-
-Package logging implements a logging infrastructure for Go. It supports
-different logging backends like syslog, file and memory. Multiple backends
-can be utilized with different log levels per backend and logger.
+This package is simplified from https://github.com/op/go-logging.
 
 ## Installing
 
 ### Using *go get*
 
-    $ go get github.com/op/go-logging
+    $ go get github.com/qjpcpu/go-logging
 
-After this command *go-logging* is ready to use. Its source will be in:
-
-    $GOROOT/src/pkg/github.com/op/go-logging
-
-You can use `go get -u -a` to update all installed packages.
 
 ## Example
 
-You can find a more detailed example at the end.
+Print log to stdout
 
 ```go
 package main
 
-import "github.com/op/go-logging"
-
-var log = logging.MustGetLogger("package.example")
+import "github.com/qjpcpu/go-logging"
 
 func main() {
-	var format = logging.MustStringFormatter("%{level} %{message}")
-	logging.SetFormatter(format)
-	logging.SetLevel(logging.INFO, "package.example")
-
-	log.Debug("hello %s", "golang")
-	log.Info("hello %s", "golang")
+    logging.InitLogger(logging.DEBUG)
+	log.Debug("hello", "golang")
+	log.Info("hello", "golang")
+	log.Debugf("hello %s", "golang")
+	log.Infof("hello %s", "golang")
 }
 ```
 
-## Documentation
-
-For docs, see http://godoc.org/github.com/op/go-logging or run:
-
-    $ go doc github.com/op/go-logging
-
-## Full example
+Print log to file
 
 ```go
 package main
 
-import (
-	stdlog "log"
-	"os"
-
-	"github.com/op/go-logging"
-)
-
-var log = logging.MustGetLogger("test")
-
-type Password string
-
-func (p Password) Redacted() interface{} {
-	return logging.Redact(string(p))
-}
+import "github.com/qjpcpu/go-logging"
 
 func main() {
-	// Customize the output format
-	logging.SetFormatter(logging.MustStringFormatter("▶ %{level:.1s} 0x%{id:x} %{message}"))
-
-	// Setup one stdout and one syslog backend.
-	logBackend := logging.NewLogBackend(os.Stderr, "", stdlog.LstdFlags|stdlog.Lshortfile)
-	logBackend.Color = true
-
-	syslogBackend, err := logging.NewSyslogBackend("")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Combine them both into one logging backend.
-	logging.SetBackend(logBackend, syslogBackend)
-
-	// Run one with debug setup for "test" and one with error.
-	for _, level := range []logging.Level{logging.DEBUG, logging.ERROR} {
-		logging.SetLevel(level, "test")
-
-		log.Critical("crit")
-		log.Error("err")
-		log.Warning("warning")
-		log.Notice("notice")
-		log.Info("info")
-		log.Debug("debug %s", Password("secret"))
-	}
+    logging.InitSimpleFileLogger("/tmp/logger"logging.DEBUG)
+	log.Debug("hello", "golang")
+	log.Info("hello", "golang")
+	log.Debugf("hello %s", "golang")
+	log.Infof("hello %s", "golang")
 }
 ```
+## FYI
+
+This pkg is forked form https://github.com/op/go-logging, thanks for his excellent work. For more docs, please see http://godoc.org/github.com/op/go-logging.
+
