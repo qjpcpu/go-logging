@@ -1,7 +1,6 @@
 package logging
 
 import (
-    "code.google.com/p/go.exp/inotify"
     "fmt"
     stdlog "log"
     "os"
@@ -51,13 +50,13 @@ func initFileLogger(filename string, level Level, flags int) {
     SetBackend(logBackend)
     SetLevel(level, default_id)
     go func() {
-        watcher, err := inotify.NewWatcher()
+        watcher, err := NewWatcher()
         if err != nil {
             return
         }
         defer watcher.Close()
         for {
-            err = watcher.AddWatch(filename, inotify.IN_ATTRIB|inotify.IN_DELETE_SELF|inotify.IN_MOVE)
+            err = watcher.AddWatch(filename, IN_ATTRIB|IN_DELETE_SELF|IN_MOVE)
             if err != nil {
                 fmt.Println(err)
                 return
