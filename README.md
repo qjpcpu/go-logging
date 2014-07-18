@@ -35,7 +35,7 @@ package main
 import "github.com/qjpcpu/go-logging"
 
 func main() {
-    logging.InitSimpleFileLogger("/tmp/logger"logging.DEBUG)
+    logging.InitSimpleFileLogger("/tmp/logger",logging.DEBUG)
 	log.Debug("hello", "golang")
 	log.Info("hello", "golang")
 	log.Debugf("hello %s", "golang")
