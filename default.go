@@ -1,6 +1,7 @@
 package logging
 
 import (
+    "code.google.com/p/go.exp/inotify"
     "fmt"
     stdlog "log"
     "os"
@@ -34,6 +35,45 @@ func InitSimpleLogger(level Level) {
     format := MustStringFormatter("%{level} %{message}")
     SetFormatter(format)
     SetLevel(level, default_id)
+}
+func InitFileLogger(filename string, level Level) {
+    initFileLogger(filename, level, stdlog.LstdFlags|stdlog.Lshortfile)
+}
+func InitSimpleFileLogger(filename string, level Level) {
+    initFileLogger(filename, level, stdlog.LstdFlags)
+}
+func initFileLogger(filename string, level Level, flags int) {
+    default_logger = MustGetLogger(default_id)
+    format := MustStringFormatter("%{level} %{message}")
+    SetFormatter(format)
+    writer, _ := os.OpenFile(filename, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
+    logBackend := NewLogBackend(writer, "", flags)
+    SetBackend(logBackend)
+    SetLevel(level, default_id)
+    go func() {
+        watcher, err := inotify.NewWatcher()
+        if err != nil {
+            return
+        }
+        defer watcher.Close()
+        for {
+            err = watcher.AddWatch(filename, inotify.IN_ATTRIB|inotify.IN_DELETE_SELF|inotify.IN_MOVE)
+            if err != nil {
+                fmt.Println(err)
+                return
+            }
+            for {
+                <-watcher.Event
+                if _, err = os.Stat(filename); os.IsNotExist(err) {
+                    break
+                }
+            }
+            writer.Close()
+            writer, _ = os.OpenFile(filename, os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
+            logBackend := NewLogBackend(writer, "", flags)
+            SetBackend(logBackend)
+        }
+    }()
 }
 
 func SetLogger(logger *Logger) {
