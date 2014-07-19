@@ -10,8 +10,10 @@ import (
 func main() {
     filename := "/tmp/log-file"
     logging.InitSimpleFileLogger(filename, logging.DEBUG)
-    logging.Debug("hello")
-    logging.Info("hi")
+    logging.Debugf("%s", "hi")
+    logging.Infof("%s", "hi")
+    logging.Noticef("%s", "hi")
+    logging.Warningf("%s", "hi")
     logging.Errorf("hello %s", "jason")
     logging.Criticalf("hi %s", "jason")
 
